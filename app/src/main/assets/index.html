@@ -53,7 +53,19 @@ input[type=search]{width:100%;background:#080c17;border:1px solid #303b5b;border
 <p id="status" role="status" aria-live="polite">Escolha as pastas para começar.</p>
 </section>
 
-<section class="card"><h2>Estado</h2><pre>Interface offline · Android WebView · Motor nativo C++</pre></section>
+
+<section class="card" id="ai-card">
+<h2>🤖 Assistente Luau</h2>
+<p>Converse com a IA para encontrar arquivos e mandar o motor do app descompilar. A IA não recebe o conteúdo dos arquivos; ela usa ferramentas locais.</p>
+<label for="gemini-key" class="small">Sua chave da API Gemini</label>
+<input id="gemini-key" type="password" autocomplete="off" placeholder="Cole sua API key aqui" style="width:100%;background:#080c17;border:1px solid #303b5b;border-radius:12px;padding:13px;color:#f4f6ff;margin:8px 0">
+<div class="toolbar"><label><input id="remember-key" type="checkbox"> Guardar chave neste dispositivo</label><span class="small">Modelo: Gemini 3 Flash</span></div>
+<div id="chat-log" aria-live="polite" style="display:flex;flex-direction:column;gap:9px;max-height:38vh;overflow:auto;margin:12px 0"></div>
+<textarea id="chat-input" rows="3" placeholder="Ex.: procura Dropdown e descompila os arquivos encontrados em ZIP..." style="width:100%;resize:vertical;background:#080c17;border:1px solid #303b5b;border-radius:12px;padding:13px;color:#f4f6ff;font:inherit"></textarea>
+<button id="chat-send" type="button">Enviar mensagem</button>
+<p class="small">A chave é usada para chamadas diretas à API e só fica salva se você marcar a opção. Evite usar uma chave que não queira expor no dispositivo.</p>
+</section>
+\n<section class="card"><h2>Estado</h2><pre>Interface offline · Android WebView · Motor nativo C++</pre></section>
 <script>
 (() => {
   const sourceButton = document.getElementById('source-folder');
