@@ -167,7 +167,7 @@ class MainActivity : Activity() {
         if (resultCode != RESULT_OK || data?.data == null) return
         val tree = data.data!!
         try {
-            contentResolver.takePersistableUriPermission(tree, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            contentResolver.takePersistableUriPermission(tree, (data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)))
         } catch (_: Exception) { }
         when (requestCode) {
             sourceRequest -> {
