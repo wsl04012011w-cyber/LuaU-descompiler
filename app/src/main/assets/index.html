@@ -129,6 +129,8 @@ input[type=search],input[type=password],textarea{width:100%;background:#090c12;b
   const CHAT_MODEL = 'gemini-3-flash-preview';
   const chatHistory = [];
   try { if (bridge().getSavedApiKey) bridge().getSavedApiKey(); } catch (_) {}
+  keyInput.addEventListener('change', () => { try { if (bridge().saveApiKey) bridge().saveApiKey(rememberKey.checked ? keyInput.value.trim() : ''); } catch (_) {} });
+  rememberKey.addEventListener('change', () => { try { if (bridge().saveApiKey) bridge().saveApiKey(rememberKey.checked ? keyInput.value.trim() : ''); } catch (_) {} });
   function addChat(role, text) {
     const bubble = document.createElement('div'); bubble.className = 'chat-bubble ' + (role === 'user' ? 'user' : 'model');
     bubble.textContent = (role === 'user' ? 'Você: ' : 'Gemini: ') + text;
