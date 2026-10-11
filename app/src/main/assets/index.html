@@ -4,68 +4,37 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="dark"><title>LuauReadable</title>
 <style>
-:root{color-scheme:dark;font-family:system-ui,-apple-system,sans-serif;background:#0b1020;color:#f4f6ff}
-*{box-sizing:border-box}body{margin:0;padding:20px 14px 40px;max-width:780px;margin-inline:auto}
-header{padding:18px 2px 22px}.badge{color:#92f5c5;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase}
-h1{font-size:2.15rem;margin:.35rem 0}h2{font-size:1.25rem;margin:.2rem 0 .8rem}p{color:#b7bfd7;line-height:1.5}
-.card{background:#151c31;border:1px solid #2b3654;border-radius:22px;padding:18px;margin:14px 0}
-button{display:block;width:100%;min-height:52px;border:0;border-radius:14px;padding:14px 16px;background:#92f5c5;color:#07140e;font-weight:800;font-size:1rem;cursor:pointer;touch-action:manipulation;margin-top:10px}
-button:active{transform:scale(.99)}button:disabled{opacity:.5}
-.secondary{background:#252e49;color:#e8edff}.outline{background:transparent;color:#92f5c5;border:1px solid #49634f}
-input[type=search]{width:100%;background:#080c17;border:1px solid #303b5b;border-radius:12px;padding:13px;color:#f4f6ff;font-size:1rem;margin:8px 0}
-.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;color:#b7bfd7;font-size:.9rem;margin:8px 0}
-.file-list{display:flex;flex-direction:column;gap:8px;max-height:42vh;overflow:auto;padding:0;margin:12px 0;list-style:none}
-.file-row{display:flex;gap:12px;align-items:flex-start;padding:12px;background:#0c1223;border:1px solid #27314d;border-radius:13px;min-width:0}
-.file-row input{width:20px;height:20px;flex:0 0 auto;accent-color:#92f5c5;margin:3px 0 0}
-.file-info{min-width:0;flex:1}.file-name{overflow-wrap:anywhere;font-weight:650}.file-path,.small{font-size:.82rem;color:#929db9;overflow-wrap:anywhere}
-.folder-status{padding:12px;border-radius:12px;background:#0c1223;color:#a7f3d0;overflow-wrap:anywhere;font-size:.92rem}
-#status{min-height:1.5em;white-space:pre-wrap}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#080c17;padding:12px;border-radius:10px;color:#92f5c5}
-.hidden{display:none}
+:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#090b10;color:#e7eaf0;--panel:#11151d;--border:#252b36;--muted:#8b95a7}
+*{box-sizing:border-box}body{margin:0;max-width:960px;margin-inline:auto;padding:0 18px 40px}header{padding:28px 2px 20px;border-bottom:1px solid var(--border)}.eyebrow{color:#9ca8ba;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700}h1{font-size:1.8rem;letter-spacing:-.04em;margin:7px 0 5px}h2{font-size:1.08rem;margin:0 0 9px}p{color:var(--muted);line-height:1.5;margin:8px 0 14px}.subhead{font-size:.92rem;margin:0}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;margin:18px 0;background:#0d1118;border:1px solid var(--border);border-radius:14px}.tab{margin:0;min-height:42px;padding:10px;background:transparent;color:var(--muted);border:1px solid transparent;border-radius:10px;font-size:.92rem;font-weight:700}.tab.active{background:#202733;color:#f1f4f8;border-color:#343d4b}
+.panel{display:none}.panel.active{display:block}.card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px;margin:12px 0}
+button{display:block;width:100%;min-height:46px;border:1px solid #b6c2d2;border-radius:10px;padding:11px 14px;background:#b6c2d2;color:#10151d;font-weight:750;font-size:.94rem;cursor:pointer;touch-action:manipulation;margin-top:9px}button:active{transform:scale(.99)}button:disabled{opacity:.45}.secondary{background:#1b222d;color:#dbe1ea;border-color:#343d4b}.outline{background:transparent;color:#c6ced9;border-color:#394352}
+input[type=search],input[type=password],textarea{width:100%;background:#090c12;border:1px solid #303846;border-radius:10px;padding:12px;color:#e7eaf0;font-size:1rem;margin:8px 0}.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;color:var(--muted);font-size:.88rem;margin:9px 0}
+.file-list{display:flex;flex-direction:column;gap:7px;max-height:40vh;overflow:auto;padding:0;margin:12px 0;list-style:none}.file-row{display:flex;gap:11px;align-items:flex-start;padding:11px;background:#0c1017;border:1px solid #252c37;border-radius:10px;min-width:0}.file-row input{width:18px;height:18px;flex:0 0 auto;accent-color:#c6ced9;margin:3px 0 0}.file-info{min-width:0;flex:1}.file-name{overflow-wrap:anywhere;font-weight:650}.file-path,.small{font-size:.8rem;color:var(--muted);overflow-wrap:anywhere}.folder-status{padding:11px;border-radius:10px;background:#0b0f15;border:1px solid #252c37;color:#b6c2d2;overflow-wrap:anywhere;font-size:.88rem}
+#status{min-height:1.5em;white-space:pre-wrap;color:#c6ced9}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#090c12;padding:12px;border-radius:10px;color:#aeb9c9;border:1px solid var(--border)}.chat-log{display:flex;flex-direction:column;gap:9px;max-height:48vh;overflow:auto;margin:12px 0}.chat-bubble{padding:11px 13px;border-radius:11px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45;background:#0c1017;border:1px solid #252c37}.chat-bubble.user{background:#202733;align-self:flex-end;max-width:92%}.chat-bubble.model{align-self:stretch}
+@media(min-width:700px){body{padding-inline:24px}.workspace{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);gap:12px;align-items:start}}
 </style>
 </head>
 <body>
-<header><div class="badge">100% local · Android</div><h1>LuauReadable</h1>
-<p>Encontre seus arquivos, escolha onde salvar e processe vários de uma vez. Tudo acontece no dispositivo.</p></header>
-
-<section class="card">
-<h2>1. Pasta dos arquivos</h2>
-<p>Escolha uma pasta. O app encontrará arquivos <code>.luac</code> e <code>.luau</code> dentro dela, incluindo subpastas.</p>
-<button id="source-folder" type="button">📂 Escolher pasta de origem</button>
-<div id="source-status" class="folder-status" style="margin-top:10px">Nenhuma pasta de origem escolhida.</div>
-<input id="search" type="search" placeholder="🔎 Pesquisar arquivo..." aria-label="Pesquisar arquivos">
-<div class="toolbar"><span id="file-count">0 arquivos</span><span><button id="select-all" class="outline" type="button" style="display:inline-block;width:auto;min-height:36px;padding:7px 11px;margin:0">Marcar todos</button></span></div>
-<ul id="file-list" class="file-list"></ul>
-<p class="small">Marque arquivos específicos ou use “Marcar todos”. Arquivos não compatíveis podem falhar na descompilação.</p>
-</section>
-
-<section class="card">
-<h2>2. Onde os arquivos vão ficar salvos?</h2>
-<p>Escolha uma pasta de destino. O Android pedirá autorização para gravar nela.</p>
-<button id="destination-folder" class="secondary" type="button">📁 Escolher pasta de destino</button>
-<div id="destination-status" class="folder-status" style="margin-top:10px">Nenhuma pasta de destino escolhida.</div>
-</section>
-
-<section class="card">
-<h2>3. Processar arquivos</h2>
-<p>Arquivos separados: cada resultado será salvo como um <code>.luau</code>. ZIP: reúne os resultados em um único arquivo compactado.</p>
-<button id="decompile-all" type="button">⚙️ Descompilar todos na pasta</button>
-<button id="zip-all" class="secondary" type="button">🗜️ Descompactar com ZIP</button>
-<p id="status" role="status" aria-live="polite">Escolha as pastas para começar.</p>
-</section>
-
-
-<section class="card" id="ai-card">
-<h2>🤖 Assistente Luau</h2>
-<p>Converse com a IA para encontrar arquivos e mandar o motor do app descompilar. A IA não recebe o conteúdo dos arquivos; ela usa ferramentas locais.</p>
-<label for="gemini-key" class="small">Sua chave da API Gemini</label>
-<input id="gemini-key" type="password" autocomplete="off" placeholder="Cole sua API key aqui" style="width:100%;background:#080c17;border:1px solid #303b5b;border-radius:12px;padding:13px;color:#f4f6ff;margin:8px 0">
-<div class="toolbar"><label><input id="remember-key" type="checkbox"> Guardar chave neste dispositivo</label><span class="small">Modelo: Gemini 3 Flash</span></div>
-<div id="chat-log" aria-live="polite" style="display:flex;flex-direction:column;gap:9px;max-height:38vh;overflow:auto;margin:12px 0"></div>
-<textarea id="chat-input" rows="3" placeholder="Ex.: procura Dropdown e descompila os arquivos encontrados em ZIP..." style="width:100%;resize:vertical;background:#080c17;border:1px solid #303b5b;border-radius:12px;padding:13px;color:#f4f6ff;font:inherit"></textarea>
-<button id="chat-send" type="button">Enviar mensagem</button>
-<p class="small">A chave é usada para chamadas diretas à API e só fica salva se você marcar a opção. Evite usar uma chave que não queira expor no dispositivo.</p>
-</section>
-\n<section class="card"><h2>Estado</h2><pre>Interface offline · Android WebView · Motor nativo C++</pre></section>
+<header><div class="eyebrow">ANDROID TOOLKIT · LUAU</div><h1>LuauReadable</h1><p class="subhead">Bytecode para código legível. Arquivos processados localmente no dispositivo.</p></header>
+<nav class="tabs" role="tablist" aria-label="Área de trabalho"><button class="tab active" id="tab-chat" role="tab" aria-selected="true">Assistente</button><button class="tab" id="tab-compiler" role="tab" aria-selected="false">Compilador manual</button></nav>
+<main>
+<section class="panel active" id="panel-chat" role="tabpanel"><div class="card">
+<h2>Assistente Luau</h2><p>Pesquise arquivos e peça ações em linguagem natural. A IA aciona ferramentas locais; o conteúdo dos arquivos não é enviado para ela.</p>
+<label for="gemini-key" class="small">Chave da API Gemini</label><input id="gemini-key" type="password" autocomplete="off" placeholder="Cole sua API key uma vez">
+<div class="toolbar"><label><input id="remember-key" type="checkbox" checked> Salvar chave no dispositivo</label><span class="small">Gemini 3 Flash</span></div>
+<div id="chat-log" class="chat-log" aria-live="polite"></div><textarea id="chat-input" rows="3" placeholder="Ex.: procura Dropdown e descompila os encontrados em ZIP..."></textarea>
+<button id="chat-send" type="button">Enviar mensagem</button><p class="small">A chave fica no armazenamento privado do app quando salva. Evite compartilhar o dispositivo ou os dados do app.</p>
+</div></section>
+<section class="panel" id="panel-compiler" role="tabpanel"><div class="workspace">
+<div class="card"><h2>Arquivos de origem</h2><p>Escolha uma pasta. O app memoriza a autorização e tenta restaurá-la na próxima abertura.</p>
+<button id="source-folder" type="button">Escolher pasta de origem</button><div id="source-status" class="folder-status" style="margin-top:9px">Restaurando pasta salva...</div>
+<input id="search" type="search" placeholder="Pesquisar por nome ou caminho..." aria-label="Pesquisar arquivos">
+<div class="toolbar"><span id="file-count">0 arquivos</span><button id="select-all" class="outline" type="button" style="width:auto;min-height:36px;padding:7px 11px;margin:0">Marcar visíveis</button></div>
+<ul id="file-list" class="file-list"></ul><p class="small">Formatos encontrados: .luac e .luau, inclusive em subpastas.</p></div>
+<div><div class="card"><h2>Destino</h2><p>Selecione onde salvar os resultados. A escolha também será lembrada.</p><button id="destination-folder" class="secondary" type="button">Escolher pasta de destino</button><div id="destination-status" class="folder-status" style="margin-top:9px">Restaurando destino salvo...</div></div>
+<div class="card"><h2>Exportar</h2><p>Salve cada resultado como .luau ou agrupe tudo em um ZIP.</p><button id="decompile-all" type="button">Descompilar arquivos</button><button id="zip-all" class="secondary" type="button">Exportar como ZIP</button><p id="status" role="status" aria-live="polite">Escolha as pastas para começar.</p></div></div>
+</div></section></main>
 <script>
 (() => {
   const sourceButton = document.getElementById('source-folder');
@@ -81,6 +50,12 @@ input[type=search]{width:100%;background:#080c17;border:1px solid #303b5b;border
   const zipAll = document.getElementById('zip-all');
   let files = [];
   let destinationChosen = false;
+  let savedSelection = new Set();
+  function switchTab(name) {
+    ['chat','compiler'].forEach(id => { const active=id===name; document.getElementById('tab-'+id).classList.toggle('active',active); document.getElementById('tab-'+id).setAttribute('aria-selected',String(active)); document.getElementById('panel-'+id).classList.toggle('active',active); });
+  }
+  document.getElementById('tab-chat').addEventListener('click',()=>switchTab('chat'));
+  document.getElementById('tab-compiler').addEventListener('click',()=>switchTab('compiler'));
 
   function bridge() {
     if (!window.AndroidBridge) throw new Error('Ponte Android indisponível. Reabra o APK atualizado.');
@@ -94,12 +69,11 @@ input[type=search]{width:100%;background:#080c17;border:1px solid #303b5b;border
       status.textContent = files.length ? 'Marque os arquivos desejados ou processe a pasta inteira.' : 'Nenhum .luac ou .luau encontrado nessa pasta.';
     } catch (e) { status.textContent = 'Não foi possível listar os arquivos: ' + e.message; }
   };
-  window.setDestinationChosen = () => {
-    destinationChosen = true;
-    destinationStatus.textContent = 'Pasta de destino selecionada. Os resultados serão gravados nela.';
-  };
+  window.setDestinationChosen = (label) => { destinationChosen = true; destinationStatus.textContent = label || 'Pasta de destino salva/restaurada.'; };
+  window.setSourceRestored = (label) => { sourceStatus.textContent = label || 'Pasta de origem restaurada.'; };
+  window.setSavedApiKey = (key) => { if(key) keyInput.value = key; };
   function selectedIds() {
-    return Array.from(list.querySelectorAll('input[type=checkbox]:checked')).map(el => Number(el.value));
+    return Array.from(savedSelection).map(Number);
   }
   function renderList() {
     list.replaceChildren();
@@ -109,7 +83,8 @@ input[type=search]{width:100%;background:#080c17;border:1px solid #303b5b;border
     for (const file of shown) {
       const row = document.createElement('li'); row.className = 'file-row';
       const check = document.createElement('input'); check.type = 'checkbox'; check.value = file.id;
-      check.checked = selectedIds().includes(Number(file.id));
+      check.checked = savedSelection.has(Number(file.id));
+      check.addEventListener('change',()=>{if(check.checked)savedSelection.add(Number(file.id));else savedSelection.delete(Number(file.id));});
       check.setAttribute('aria-label', 'Selecionar ' + file.name);
       const info = document.createElement('div'); info.className = 'file-info';
       const name = document.createElement('div'); name.className = 'file-name'; name.textContent = file.name;
@@ -121,8 +96,8 @@ input[type=search]{width:100%;background:#080c17;border:1px solid #303b5b;border
   selectAll.addEventListener('click', () => {
     const shown = Array.from(list.querySelectorAll('input[type=checkbox]'));
     const shouldCheck = shown.some(el => !el.checked);
-    shown.forEach(el => el.checked = shouldCheck);
-    selectAll.textContent = shouldCheck ? 'Desmarcar visíveis' : 'Marcar todos';
+    shown.forEach(el => {el.checked=shouldCheck;if(shouldCheck)savedSelection.add(Number(el.value));else savedSelection.delete(Number(el.value));});
+    selectAll.textContent = shouldCheck ? 'Desmarcar visíveis' : 'Marcar visíveis';
   });
   sourceButton.addEventListener('click', () => {
     try { bridge().requestSourceFolder(); } catch(e) { status.textContent = e.message; }
@@ -153,22 +128,17 @@ input[type=search]{width:100%;background:#080c17;border:1px solid #303b5b;border
   const chatSend = document.getElementById('chat-send');
   const CHAT_MODEL = 'gemini-3-flash-preview';
   const chatHistory = [];
-  try {
-    const savedKey = localStorage.getItem('luaureadable_gemini_key');
-    if (savedKey) { keyInput.value = savedKey; rememberKey.checked = true; }
-  } catch (_) {}
+  try { if (bridge().getSavedApiKey) bridge().getSavedApiKey(); } catch (_) {}
   function addChat(role, text) {
-    const bubble = document.createElement('div');
-    bubble.style.cssText = 'padding:11px 13px;border-radius:13px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45;' +
-      (role === 'user' ? 'background:#26324f;align-self:flex-end;' : 'background:#0c1223;border:1px solid #27314d;align-self:stretch;');
+    const bubble = document.createElement('div'); bubble.className = 'chat-bubble ' + (role === 'user' ? 'user' : 'model');
     bubble.textContent = (role === 'user' ? 'Você: ' : 'Gemini: ') + text;
     chatLog.appendChild(bubble); chatLog.scrollTop = chatLog.scrollHeight;
   }
   function setSelected(ids) {
     const valid = new Set(ids.map(Number).filter(id => files.some(f => Number(f.id) === id)));
+    savedSelection = valid;
     window.aiSelectedIds = Array.from(valid);
     renderList();
-    Array.from(list.querySelectorAll('input[type=checkbox]')).forEach(el => { el.checked = valid.has(Number(el.value)); });
     return Array.from(valid);
   }
   const declarations = [
@@ -203,8 +173,7 @@ input[type=search]{width:100%;background:#080c17;border:1px solid #303b5b;border
     if(!message) return;
     if(!apiKey) { addChat('model','Cole sua API key Gemini antes de conversar.'); keyInput.focus(); return; }
     if(!files.length) { addChat('model','Primeiro escolha a pasta de origem para eu poder pesquisar os arquivos.'); return; }
-    if(rememberKey.checked) { try { localStorage.setItem('luaureadable_gemini_key',apiKey); } catch (_) {} }
-    else { try { localStorage.removeItem('luaureadable_gemini_key'); } catch (_) {} }
+    try { if (bridge().saveApiKey) bridge().saveApiKey(rememberKey.checked ? apiKey : ''); } catch (_) {}
     chatInput.value=''; addChat('user',message); chatSend.disabled=true; chatSend.textContent='Pensando...';
     chatHistory.push({role:'user',parts:[{text:message}]});
     try {
