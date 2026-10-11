@@ -27,10 +27,18 @@ class MainActivity : Activity() {
     private val sourceRequest = 4108
     private val destinationRequest = 4109
     private val sourceFiles = mutableListOf<FileEntry>()
+    private val prefs by lazy { getSharedPreferences("luau_readable_prefs", MODE_PRIVATE) }
 
     private data class FileEntry(val uri: Uri, val name: String, val size: Long, val relativePath: String)
 
     inner class AndroidBridge {
+        @JavascriptInterface fun getSavedApiKey() {
+            val key = prefs.getString("gemini_api_key", "") ?: ""
+            runOnUiThread { web.evaluateJavascript("setSavedApiKey(" + JSONObject.quote(key) + ")", null) }
+        }
+        @JavascriptInterface fun saveApiKey(key: String) {
+            prefs.edit().putString("gemini_api_key", key).apply()
+        }
         @JavascriptInterface fun requestSourceFolder() {
             runOnUiThread { openTreePicker(sourceRequest) }
         }
@@ -95,7 +103,13 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         web = WebView(this)
-        web.webViewClient = WebViewClient()
+        web.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                restoreSavedFolders()
+                web.evaluateJavascript("if(window.AndroidBridge && window.AndroidBridge.getSavedApiKey) window.AndroidBridge.getSavedApiKey()", null)
+            }
+        }
         web.settings.javaScriptEnabled = true
         web.addJavascriptInterface(AndroidBridge(), "AndroidBridge")
         web.webChromeClient = object : WebChromeClient() {
@@ -111,6 +125,34 @@ class MainActivity : Activity() {
         web.loadUrl("file:///android_asset/index.html")
         setContentView(web)
         Toast.makeText(this, nativeStatus(), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun restoreSavedFolders() {
+        val savedSource = prefs.getString("source_tree_uri", null)
+        val savedDestination = prefs.getString("destination_tree_uri", null)
+        if (savedDestination != null) {
+            try {
+                destinationTree = Uri.parse(savedDestination)
+                web.evaluateJavascript("setDestinationChosen(" + JSONObject.quote("Destino salvo restaurado.") + ")", null)
+            } catch (_: Exception) { destinationTree = null }
+        }
+        if (savedSource != null) {
+            try {
+                val tree = Uri.parse(savedSource)
+                sourceTree = tree
+                synchronized(sourceFiles) {
+                    sourceFiles.clear()
+                    scanTree(tree, DocumentsContract.getTreeDocumentId(tree), "")
+                }
+                web.evaluateJavascript("renderFilesFromAndroid()", null)
+                web.evaluateJavascript("setSourceRestored(" + JSONObject.quote("Pasta de origem salva restaurada.") + ")", null)
+            } catch (_: Exception) {
+                sourceTree = null
+                web.evaluateJavascript("setSourceRestored(" + JSONObject.quote("A pasta salva não está acessível. Escolha novamente.") + ")", null)
+            }
+        } else {
+            web.evaluateJavascript("setSourceRestored(" + JSONObject.quote("Nenhuma pasta de origem salva.") + ")", null)
+        }
     }
 
     private fun openTreePicker(requestCode: Int) {
@@ -130,6 +172,7 @@ class MainActivity : Activity() {
         when (requestCode) {
             sourceRequest -> {
                 sourceTree = tree
+                prefs.edit().putString("source_tree_uri", tree.toString()).apply()
                 synchronized(sourceFiles) {
                     sourceFiles.clear()
                     scanTree(tree, DocumentsContract.getTreeDocumentId(tree), "")
@@ -139,7 +182,8 @@ class MainActivity : Activity() {
             }
             destinationRequest -> {
                 destinationTree = tree
-                web.evaluateJavascript("setDestinationChosen()", null)
+                prefs.edit().putString("destination_tree_uri", tree.toString()).apply()
+                web.evaluateJavascript("setDestinationChosen(" + JSONObject.quote("Pasta de destino salva neste dispositivo.") + ")", null)
                 Toast.makeText(this, "Pasta de destino selecionada.", Toast.LENGTH_SHORT).show()
             }
         }
