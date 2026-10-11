@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="dark">
 <title>LuauReadable</title>
-<style>
+<style>#output{width:100%;min-height:220px;background:#080c17;color:#92f5c5;border:1px solid #2b3654;border-radius:10px;padding:12px;font:.9rem ui-monospace,monospace;white-space:pre;overflow:auto}\n
 :root{color-scheme:dark;font-family:system-ui,sans-serif;background:#0b1020;color:#f4f6ff}
 *{box-sizing:border-box}body{margin:0;padding:24px 16px;max-width:760px;margin-inline:auto}
 header{padding:18px 0 26px}.badge{color:#92f5c5;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase}
@@ -26,7 +26,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#080c17;padding:12px;
 <p id="status" role="status" aria-live="polite">Nenhum arquivo selecionado.</p>
 <ul id="file-list" class="file-list"></ul>
 <button id="decompile" type="button">Decompilar arquivos</button>
-<p class="small">A seleção de arquivos está habilitada. O motor C++ ainda precisa ser integrado para realizar a decompilação.</p></section>
+<p class="small">O bytecode é processado localmente pelo motor C++. Arquivos compactados ou formatos incompatíveis podem não ser suportados.</p></section>
 <section class="card"><h2>Estado do projeto</h2><pre>Interface offline: OK
 Seletor de arquivos Android: habilitado
 Ponte nativa C++: incluída
@@ -52,12 +52,36 @@ Motor de decompilação: pendente</pre></section>
       list.appendChild(item);
     });
   });
-  document.getElementById('decompile').addEventListener('click', () => {
-    if (!input.files || input.files.length === 0) {
-      status.textContent = 'Selecione primeiro um ou mais arquivos.';
-      return;
+  const output = document.getElementById('output');
+  let lastResult = '';
+  document.getElementById('decompile').addEventListener('click', async () => {
+    const files = Array.from(input.files || []);
+    if (!files.length) { status.textContent = 'Selecione primeiro um ou mais arquivos.'; return; }
+    output.textContent = '';
+    for (const file of files) {
+      status.textContent = 'Decompilando ' + file.name + '...';
+      try {
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        let binary = '';
+        const chunkSize = 0x8000;
+        for (let i = 0; i < bytes.length; i += chunkSize)
+          binary += String.fromCharCode(...bytes.subarray(i, Math.min(i + chunkSize, bytes.length)));
+        const result = AndroidBridge.decompileBase64(btoa(binary));
+        output.textContent += '-- ===== ' + file.name + ' =====\\n' + result + '\\n\\n';
+      } catch (error) {
+        output.textContent += '-- Erro em ' + file.name + ': ' + error.message + '\\n';
+      }
     }
-    status.textContent = 'Arquivos selecionados. A decompilação estará disponível quando o motor C++ for integrado.';
+    lastResult = output.textContent;
+    status.textContent = 'Processamento concluído. Confira os resultados abaixo.';
+  });
+  document.getElementById('save').addEventListener('click', () => {
+    if (!lastResult) { status.textContent = 'Ainda não há resultado para salvar.'; return; }
+    const blob = new Blob([lastResult], {type:'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = 'decompiled.luau'; link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
   });
 })();
 </script>
