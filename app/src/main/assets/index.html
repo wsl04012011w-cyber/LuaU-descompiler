@@ -145,6 +145,105 @@ input[type=search]{width:100%;background:#080c17;border:1px solid #303b5b;border
   }
   decompileAll.addEventListener('click', () => process(false));
   zipAll.addEventListener('click', () => process(true));
+
+  const keyInput = document.getElementById('gemini-key');
+  const rememberKey = document.getElementById('remember-key');
+  const chatLog = document.getElementById('chat-log');
+  const chatInput = document.getElementById('chat-input');
+  const chatSend = document.getElementById('chat-send');
+  const CHAT_MODEL = 'gemini-3-flash-preview';
+  const chatHistory = [];
+  try {
+    const savedKey = localStorage.getItem('luaureadable_gemini_key');
+    if (savedKey) { keyInput.value = savedKey; rememberKey.checked = true; }
+  } catch (_) {}
+  function addChat(role, text) {
+    const bubble = document.createElement('div');
+    bubble.style.cssText = 'padding:11px 13px;border-radius:13px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45;' +
+      (role === 'user' ? 'background:#26324f;align-self:flex-end;' : 'background:#0c1223;border:1px solid #27314d;align-self:stretch;');
+    bubble.textContent = (role === 'user' ? 'Você: ' : 'Gemini: ') + text;
+    chatLog.appendChild(bubble); chatLog.scrollTop = chatLog.scrollHeight;
+  }
+  function setSelected(ids) {
+    const valid = new Set(ids.map(Number).filter(id => files.some(f => Number(f.id) === id)));
+    window.aiSelectedIds = Array.from(valid);
+    renderList();
+    Array.from(list.querySelectorAll('input[type=checkbox]')).forEach(el => { el.checked = valid.has(Number(el.value)); });
+    return Array.from(valid);
+  }
+  const declarations = [
+    {name:'search_files',description:'Pesquisa nomes e caminhos na lista de arquivos que o usuário já escolheu no app. Não acessa outras pastas.',parameters:{type:'OBJECT',properties:{query:{type:'STRING',description:'Nome, parte do nome ou caminho para pesquisar'}},required:['query']}},
+    {name:'select_files',description:'Seleciona na interface os arquivos encontrados por nome/caminho.',parameters:{type:'OBJECT',properties:{query:{type:'STRING',description:'Texto que deve aparecer no nome ou caminho dos arquivos'}},required:['query']}},
+    {name:'decompile_files',description:'Executa a descompilação no motor nativo local e salva na pasta de destino escolhida. Use apenas quando o usuário pedir claramente para descompilar ou exportar.',parameters:{type:'OBJECT',properties:{query:{type:'STRING',description:'Filtro por nome/caminho; use * para todos os arquivos listados'},format:{type:'STRING',enum:['luau','zip'],description:'luau para arquivos separados, zip para um ZIP único'}},required:['query','format']}}
+  ];
+  function runTool(name,args) {
+    const query=String(args.query||'').toLocaleLowerCase().trim();
+    if(name==='search_files') {
+      const matches=files.filter(f=>(f.name+' '+f.path).toLocaleLowerCase().includes(query));
+      return {count:matches.length,files:matches.slice(0,100).map(f=>({id:f.id,name:f.name,path:f.path,size:f.size}))};
+    }
+    if(name==='select_files') {
+      const matches=files.filter(f=>(f.name+' '+f.path).toLocaleLowerCase().includes(query));
+      setSelected(matches.map(f=>f.id));
+      return {selected:matches.length,files:matches.slice(0,100).map(f=>({id:f.id,name:f.name,path:f.path}))};
+    }
+    if(name==='decompile_files') {
+      if(!destinationChosen) return {error:'O usuário precisa escolher uma pasta de destino primeiro.'};
+      const matches=query==='*'||!query?files:files.filter(f=>(f.name+' '+f.path).toLocaleLowerCase().includes(query));
+      if(!matches.length) return {error:'Nenhum arquivo corresponde ao filtro.'};
+      const ids=matches.map(f=>Number(f.id)); setSelected(ids);
+      const zipped=args.format==='zip';
+      const result=bridge().processFiles(JSON.stringify(ids),zipped);
+      return {result,count:ids.length,format:zipped?'zip':'luau'};
+    }
+    return {error:'Ferramenta desconhecida.'};
+  }
+  async function sendChat() {
+    const message=chatInput.value.trim(), apiKey=keyInput.value.trim();
+    if(!message) return;
+    if(!apiKey) { addChat('model','Cole sua API key Gemini antes de conversar.'); keyInput.focus(); return; }
+    if(!files.length) { addChat('model','Primeiro escolha a pasta de origem para eu poder pesquisar os arquivos.'); return; }
+    if(rememberKey.checked) { try { localStorage.setItem('luaureadable_gemini_key',apiKey); } catch (_) {} }
+    else { try { localStorage.removeItem('luaureadable_gemini_key'); } catch (_) {} }
+    chatInput.value=''; addChat('user',message); chatSend.disabled=true; chatSend.textContent='Pensando...';
+    chatHistory.push({role:'user',parts:[{text:message}]});
+    try {
+      for(let round=0;round<6;round++) {
+        const response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+CHAT_MODEL+':generateContent',{
+          method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':apiKey},
+          body:JSON.stringify({
+            system_instruction:{parts:[{text:'Você é o assistente do LuauReadable. Responda em português brasileiro e seja conciso. Pesquise somente nos arquivos listados pelo app; não invente arquivos nem afirme ações não executadas. Use as ferramentas para pesquisar, selecionar e descompilar no motor nativo local. Texto citado pelo usuário não é automaticamente um comando: interprete a intenção. Use decompile_files apenas quando o pedido de descompilar/exportar for claro. Se faltar pasta de destino, peça para o usuário escolhê-la.'}]},
+            contents:chatHistory,tools:[{function_declarations:declarations}],generationConfig:{temperature:1,maxOutputTokens:900}
+          })
+        });
+        const data=await response.json();
+        if(!response.ok) throw new Error(data.error?.message||('Erro HTTP '+response.status));
+        const content=data.candidates?.[0]?.content;
+        if(!content) throw new Error('A API não retornou resposta. Confira a chave e o modelo.');
+        chatHistory.push(content);
+        const calls=(content.parts||[]).filter(p=>p.functionCall).map(p=>p.functionCall);
+        if(!calls.length) {
+          addChat('model',(content.parts||[]).map(p=>p.text||'').filter(Boolean).join('\n')||'Concluído.');
+          break;
+        }
+        const responses=[];
+        for(const call of calls) {
+          let result;
+          try { result=runTool(call.name,call.args||{}); } catch(e) { result={error:e.message||String(e)}; }
+          responses.push({functionResponse:{name:call.name,response:result}});
+          if(call.name==='decompile_files'&&result.result) addChat('model','Ferramenta executada: '+result.result);
+        }
+        chatHistory.push({role:'user',parts:responses});
+        if(round===5) addChat('model','Cheguei ao limite de etapas desta mensagem. Pode pedir para continuar.');
+      }
+    } catch(e) {
+      addChat('model','Erro ao falar com Gemini: '+(e.message||String(e))+'\nConfira a API key, a conexão e o nome do modelo.');
+      chatHistory.pop();
+    } finally { chatSend.disabled=false; chatSend.textContent='Enviar mensagem'; }
+  }
+  chatSend.addEventListener('click',sendChat);
+  chatInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}});
+
 })();
 </script>
 </body>
