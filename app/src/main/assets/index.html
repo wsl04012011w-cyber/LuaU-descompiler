@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>LuauReadable</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#0b1020;color:#f4f6ff}
+*{box-sizing:border-box}body{margin:0;padding:24px 16px;max-width:760px;margin-inline:auto}
+header{padding:18px 0 26px} .badge{color:#92f5c5;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase}
+h1{font-size:2.1rem;margin:.4rem 0}p{color:#b7bfd7;line-height:1.55}
+.card{background:#151c31;border:1px solid #2b3654;border-radius:18px;padding:18px;margin:14px 0}
+button{border:0;border-radius:12px;padding:13px 16px;background:#92f5c5;color:#07140e;font-weight:700;font-size:1rem;width:100%}
+input{width:100%;margin:14px 0;color:#dce4ff}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#080c17;padding:12px;border-radius:10px;color:#92f5c5}
+.small{font-size:.85rem;color:#929db9}
+</style></head>
+<body>
+<header><div class="badge">100% local · Android</div><h1>LuauReadable</h1>
+<p>Ferramenta offline para trabalhar com arquivos Luau bytecode autorizados. Sem conta e sem envio para servidor.</p></header>
+<section class="card"><h2>Selecionar arquivos</h2>
+<p>Escolha um ou mais arquivos <code>.luac</code>. A interface está pronta como protótipo; a integração do decompilador ainda está em desenvolvimento.</p>
+<input type="file" accept=".luac,application/octet-stream" multiple disabled>
+<button disabled>Decompilar arquivos</button>
+<p class="small">Seleção e processamento serão habilitados quando o motor C++ estiver integrado.</p></section>
+<section class="card"><h2>Estado do projeto</h2><pre>Interface offline: OK
+Ponte nativa C++: incluída
+Motor de decompilação: pendente</pre></section>
+</body></html>
